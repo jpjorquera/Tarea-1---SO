@@ -5,6 +5,6 @@
 
 char * get_artist(char * archivo);
 char * get_genre(char * archivo);
-void * get_all(char * archivo, char * artista, char * genero);
+void get_all(char * archivo, char * artista, char * genero);
 
 #endif
