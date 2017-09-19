@@ -20,6 +20,9 @@ HEADERS = $(wildcard *.h)
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) $(LIBS) -o $@
 
+run:
+	./prog
+
 clean:
 	-rm -f *.o
 	-rm -f $(TARGET)
