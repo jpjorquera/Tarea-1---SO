@@ -1,5 +1,4 @@
 TARGET = prog
-LIBS = -lm
 CC = gcc
 CFLAGS = -Wall -Llib -lid3v2
 
@@ -9,7 +8,7 @@ default: $(TARGET)
 
 all: default
 
-OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
+OBJECTS = test.c src/id.c
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
@@ -18,7 +17,7 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) $(LIBS) -o $@
+	$(CC) $(OBJECTS) $(CFLAGS) -o $@
 
 run:
 	./prog
