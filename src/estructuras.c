@@ -109,4 +109,5 @@ void destroyAdy(lista * generos) {
 		}		
 		free(aux);
 	}
+	free(generos);
 }
