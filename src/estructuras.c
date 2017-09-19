@@ -81,12 +81,8 @@ void insertarArt(lista generos, char * genero, char * artista) {
 	}
 }
 
-void inicializarGen(lista * generos) {
-	generos = (lista *)malloc(sizeof(lista));
-}
-
-void inicializarArt(lista * artistas) {
-	artistas = (lista *)malloc(sizeof(lista));
+void inicializarLista(lista * lis) {
+	lis = (lista *)malloc(sizeof(lista));
 }
 
 void destroyAdy(lista * generos) {

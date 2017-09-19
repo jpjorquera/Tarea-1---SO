@@ -15,5 +15,9 @@ typedef struct lista_enlazada {
 
 int buscarGenero(lista generos, char * genero);
 int buscarArtista(lista generos, char * genero, char * artista);
+void insertarGen(lista generos, char * genero);
+void insertarArt(lista generos, char * genero, char * artista);
+void inicializarLista(lista * generos);
+void destroyAdy(lista * generos);
 
 #endif
