@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "id3v2lib/include/id3v2lib.h"
+#include "../include/header.h"
 
 char * get_artist(char * nombre_archivo) {
 	FILE *archivo;

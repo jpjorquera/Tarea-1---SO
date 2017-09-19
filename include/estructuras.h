@@ -2,7 +2,7 @@
 #define ESTRUCTURAS_H_
 
 typedef struct node {
-	char * cosa;
+	char * contenido;
 	struct node * sig;
 } nodo;
 

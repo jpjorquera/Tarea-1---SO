@@ -3,8 +3,8 @@
 
 #include "estructuras.h"
 
-char * get_artist;
-char * get_genre;
-char * get_all;
+char * get_artist(char * archivo);
+char * get_genre(char * archivo);
+void * get_all(char * archivo, char * artista, char * genero);
 
 #endif
