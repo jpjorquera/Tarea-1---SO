@@ -8,7 +8,7 @@ default: $(TARGET)
 
 all: default
 
-OBJECTS = test.c src/id.c
+OBJECTS = test2.c src/id.c
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
@@ -20,7 +20,7 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) $(CFLAGS) -o $@
 
 run:
-	./prog
+	./$(TARGET)
 
 clean:
 	-rm -f *.o
