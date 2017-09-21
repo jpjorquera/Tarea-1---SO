@@ -57,6 +57,7 @@ void insertSong(lista * generos, lista * canciones) {
 		printf("Saque el artista %s\n", art);
 		insertarGen(generos, gen);
 		insertarArt(generos, gen, art);
+		free(path);
 		i++;
 		if (i < canciones->largo) {
 			actual = actual->sig;
