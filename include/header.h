@@ -14,8 +14,6 @@ int verifyTag(char * id);
 // dir
 int getExt(char * archivo, char * extension);
 int enlistSongs(lista * canciones);
-void readFolders();
-void enterFolder();
+void createFolders(lista * canciones);
 void readSong();
-
 #endif
