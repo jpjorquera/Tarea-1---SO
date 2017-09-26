@@ -1,13 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>
-#include <string.h>
 #include <dirent.h>
-#include "id3v2lib/include/id3v2lib.h"
 #include "../include/header.h"
-
-//#include "id.c"				// /* Borrar para el
-//#include "estructuras.c"	//		Makefile	*/
 
 int getExt(char * archivo, char * extension) {
 	char * ext = strrchr(archivo, '.');
@@ -20,9 +13,10 @@ int getExt(char * archivo, char * extension) {
 	}
 }
 
-int listSongs(lista * canciones) {
+int enlistSongs(lista * canciones) {
 	struct dirent *entrada;
 	DIR * carpeta = opendir("Biblioteca De Musica");
+	char * biblioteca = "Biblioteca de Musica/";
 	if (carpeta == NULL) {
         return 0;
     }
@@ -30,39 +24,26 @@ int listSongs(lista * canciones) {
     	char * extension = (char *)malloc(sizeof(char));
     	if (getExt(entrada->d_name, extension)) {
     		if (!strncmp(extension, "mp3", 3)) {
-    			insertarGen(canciones, entrada->d_name);
+    			mp3tag * tag = (mp3tag *)malloc(sizeof(mp3tag));
+
+    			// Armando direccion del archivo
+    			char * path = (char *)malloc(strlen(entrada->d_name)+strlen(biblioteca)+1);
+				strcpy(path, biblioteca);
+				strcat(path, entrada->d_name);
+				// Abriendo archivo
+    			FILE * archivo = fopen(path, "r");
+    			// Obtener tag
+    			get_all(archivo, tag);
+    			// Insertar a la lista
+    			insertarGen(canciones, tag->genre);
+    			insertarArt(canciones, tag->genre, tag);
+    			// Cerrar archivo
+    			fclose(archivo);
     		}
     	};
     }
     closedir(carpeta);
     return 1;
-}
-
-void insertSong(lista * generos, lista * canciones) {
-	nodo * actual = canciones->inicial;
-	unsigned int i = 0;
-	char * biblioteca = "Biblioteca De Musica/";
-	printf("fuera insertSong de largo: %d\n", canciones->largo); // test
-	while (i < canciones->largo) {
-		char * cancion = actual->contenido;
-		printf("contenido %s\n", cancion);
-		char * path = (char *)malloc(strlen(cancion)+strlen(biblioteca)+1);
-		strcpy(path, biblioteca);
-		printf("path 1: %s\n", path);
-		strcat(path, cancion);
-		printf("path 2: %s\n", path);
-		char * gen = get_genre(path);
-		printf("Saque el genero %s\n", gen);
-		char * art = get_artist(path);
-		printf("Saque el artista %s\n", art);
-		insertarGen(generos, gen);
-		insertarArt(generos, gen, art);
-		free(path);
-		i++;
-		if (i < canciones->largo) {
-			actual = actual->sig;
-		}
-	}
 }
 
 void readFolders() {
@@ -76,11 +57,3 @@ void enterFolder() {
 void readSong() {
 
 }
-
-/*int main() {
-	lista * canciones = (lista *)malloc(sizeof(lista));
-	listSongs(canciones);
-	lista * genre = (lista *)malloc(sizeof(lista));
-	insertSong(genre, canciones);
-	free(canciones);
-}*/

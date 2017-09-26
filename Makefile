@@ -1,6 +1,6 @@
 TARGET = prog
 CC = gcc
-CFLAGS = -Wall -Llib -lid3v2
+CFLAGS = -Wall
 
 .PHONY: default all clean
 

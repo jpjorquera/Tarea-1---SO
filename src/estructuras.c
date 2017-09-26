@@ -63,14 +63,16 @@ void insertarGen(lista * generos, char * genero) {
 	aux->subcontenido->largo = 0;
 }
 
-void insertarArt(lista * generos, char * genero, char * artista) {
+void insertarArt(lista * generos, char * genero, mp3tag * tag) {
 	nodo * actual_genero = generos->inicial;
+	char * artista = tag->artist;
 	while (actual_genero->contenido != genero) {
 		actual_genero = actual_genero->sig;
 	}
 	if (actual_genero->subcontenido->largo == 0) {
 		nodo * aux = (nodo *)malloc(sizeof(nodo));
 		aux->contenido = artista;
+		aux->id = tag;
 		actual_genero->subcontenido->inicial = aux;
 		actual_genero->subcontenido->final = aux;
 		actual_genero->subcontenido->largo = 1;
@@ -78,6 +80,7 @@ void insertarArt(lista * generos, char * genero, char * artista) {
 	else {
 		nodo * aux = (nodo *)malloc(sizeof(nodo));
 		aux->contenido = artista;
+		aux->id = tag;
 		actual_genero->subcontenido->final->sig = aux;
 		actual_genero->subcontenido->final = aux;
 		actual_genero->subcontenido->largo += 1;
@@ -86,6 +89,17 @@ void insertarArt(lista * generos, char * genero, char * artista) {
 
 void inicializarLista(lista * lis) {
 	lis->largo = 0;
+}
+
+void freeTag(mp3tag * id) {
+	free(id->tag);
+	free(id->song);
+	free(id->artist);
+	free(id->genre);
+	free(id->album);
+	free(id->year);
+	free(id->comment);
+	free(id);
 }
 
 void destroyAdy(lista * generos) {
@@ -98,6 +112,7 @@ void destroyAdy(lista * generos) {
 			if (art->largo > 0) {
 				art->inicial = art->inicial->sig;
 			}
+			freeTag(aux->id);
 			free(aux);
 		}
 		free(generos->inicial->subcontenido);
@@ -106,7 +121,8 @@ void destroyAdy(lista * generos) {
 		if (generos->largo > 0) {
 			generos->inicial = generos->inicial->sig;
 			art = generos->inicial->subcontenido;
-		}		
+		}
+		freeTag(aux->id);	
 		free(aux);
 	}
 	free(generos);

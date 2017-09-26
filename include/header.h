@@ -1,15 +1,18 @@
 #ifndef HEADER_H_
 #define HEADER_H_
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "estructuras.h"
+
 // id
-char * get_artist(char * archivo);
-char * get_genre(char * archivo);
-void get_all(char * archivo, char * artista, char * genero);
+void get_genre(char * numero_genero);
+void get_all(FILE * archivo, mp3tag * tag);
 // dir
 int getExt(char * archivo, char * extension);
-int listSongs(lista * canciones);
-void insertSong(lista * generos, lista * canciones);
+int enlistSongs(lista * canciones);
 void readFolders();
 void enterFolder();
 void readSong();
