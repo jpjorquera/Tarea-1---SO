@@ -28,7 +28,6 @@ int enlistSongs(lista * canciones) {
     	if (getExt(entrada->d_name, extension)) {
     		if (!strncmp(extension, "mp3", 3)) {
     			mp3tag * tag = (mp3tag *)malloc(sizeof(mp3tag));
-
     			// Armando direccion del archivo
     			char * path = (char *)malloc(sizeof(char)*(strlen(entrada->d_name)+strlen(biblioteca)+1));
 				strcpy(path, biblioteca);
@@ -89,6 +88,42 @@ void createFolders(lista * canciones) {
         i++;
         if (i < canciones->largo) {
             auxi = auxi->sig;
+        }
+    }
+}
+
+void moveSongs(lista * canciones) {
+    char * biblioteca = "Biblioteca de Musica/";
+    struct dirent * entrada;
+    DIR * carpeta = opendir("Biblioteca De Musica");
+    while ((entrada = readdir(carpeta)) != NULL) {
+        char * extension = (char *)malloc(sizeof(char));
+        if (getExt(entrada->d_name, extension)) {
+            if (!strncmp(extension, "mp3", 3)) {
+                mp3tag * tag_actual = (mp3tag *)malloc(sizeof(mp3tag));
+                char * path = (char *)malloc(sizeof(char)*(strlen(entrada->d_name)+strlen(biblioteca)+1));
+                strcpy(path, biblioteca);
+                strcat(path, entrada->d_name);
+                FILE * archivo = fopen(path, "r");
+                // Obtener tag
+                get_all(archivo, tag_actual);
+                if (verifyTag(tag_actual->tag)) {
+                    int largo_dir = strlen(biblioteca) + strlen(tag_actual->genre) 
+                                    + strlen(tag_actual->artist) + strlen(entrada->d_name)+ 2;
+                    char * new_path = (char *)malloc(sizeof(char) * largo_dir);
+                    strcpy(new_path, biblioteca);
+                    strcat(new_path, tag_actual->genre);
+                    strcat(new_path, "/");
+                    strcat(new_path, tag_actual->artist);
+                    strcat(new_path, "/");
+                    strcat(new_path, entrada->d_name);
+                    rename(path, new_path);
+                    free(new_path);
+                }
+                free(path);
+                free(tag_actual);
+                fclose(archivo);
+            }
         }
     }
 }
