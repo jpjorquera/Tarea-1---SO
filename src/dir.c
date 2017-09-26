@@ -38,7 +38,11 @@ int enlistSongs(lista * canciones) {
     			if (verifyTag(tag->tag)) {
                 // Insertar a la lista
 	    			insertarGen(canciones, tag->genre);
-	    			insertarArt(canciones, tag->genre, tag);
+                    /*printf("artista: %s\n", tag->artist);
+                    printf("genero: %s\n", tag->genre);*/
+	    			insertarArt(canciones, tag->genre, tag->artist);
+                    insertarTag(canciones, tag);
+                    //printf("\n");
     			}
     			// Cerrar archivo
     			fclose(archivo);

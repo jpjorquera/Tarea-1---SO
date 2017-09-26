@@ -31,7 +31,8 @@ typedef struct tag {
 int buscarGenero(lista * generos, char * genero);
 int buscarArtista(lista * generos, char * genero, char * artista);
 void insertarGen(lista * generos, char * genero);
-void insertarArt(lista * generos, char * genero, mp3tag * tag);
+void insertarArt(lista * generos, char * genero, char * artista);
+void insertarTag(lista * generos, mp3tag * tag);
 void inicializarLista(lista * generos);
 void freeTag(mp3tag * tag);
 void destroyAdy(lista * generos);

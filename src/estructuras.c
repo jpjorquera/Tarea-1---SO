@@ -9,14 +9,14 @@ int buscarGenero(lista * generos, char * genero) {
 	unsigned int i = 0;
 	while (i < largo) {
 		if (strcmp(actual->contenido, genero) == 0) {
-			return 0;
+			return 1;
 		}
 		else {
 			actual = actual->sig;
 		}
 		++i;
 	}
-	return 1;
+	return 0;
 }
 
 int buscarArtista(lista * generos, char * genero,char * artista) {
@@ -24,11 +24,11 @@ int buscarArtista(lista * generos, char * genero,char * artista) {
 	unsigned int largo_genero = generos->largo;
 	unsigned int i = 0, j = 0;
 	while (i < largo_genero) {
-		if (actual_genero->contenido == genero) {
+		if (strcmp(actual_genero->contenido, genero) == 0) {
 			nodo * actual_artista = actual_genero->subcontenido->inicial;
 			unsigned int largo_artista = actual_genero->subcontenido->largo;
 			while (j < largo_artista) {
-				if (actual_artista->contenido == artista){
+				if (strcmp(actual_artista->contenido, artista) == 0){
 					return 1;
 				}
 				else {
@@ -46,7 +46,7 @@ int buscarArtista(lista * generos, char * genero,char * artista) {
 }
 
 void insertarGen(lista * generos, char * genero) {
-	if (buscarGenero(generos, genero)) {
+	if (!buscarGenero(generos, genero)) {
 		nodo * aux;
 		if (generos->largo == 0){
 			aux = (nodo *)malloc(sizeof(nodo));
@@ -67,28 +67,49 @@ void insertarGen(lista * generos, char * genero) {
 	}
 }
 
-void insertarArt(lista * generos, char * genero, mp3tag * tag) {
+void insertarArt(lista * generos, char * genero, char * artista) {
 	nodo * actual_genero = generos->inicial;
-	char * artista = tag->artist;
 	while (strcmp(actual_genero->contenido, genero) != 0) {
 		actual_genero = actual_genero->sig;
 	}
-	if (actual_genero->subcontenido->largo == 0) {
+	int found = buscarArtista(generos, genero, artista);
+	if (!found) {
 		nodo * aux = (nodo *)malloc(sizeof(nodo));
-		aux->contenido = artista;
-		aux->id = tag;
-		actual_genero->subcontenido->inicial = aux;
+		aux->contenido =  artista;
+		if (actual_genero->subcontenido->largo == 0) {
+			actual_genero->subcontenido->inicial = aux;
+		}
+		else {
+			actual_genero->subcontenido->final->sig = aux;
+		}
 		actual_genero->subcontenido->final = aux;
-		actual_genero->subcontenido->largo = 1;
+		actual_genero->subcontenido->largo++;
+		aux->subcontenido = (lista *)malloc(sizeof(lista));
+		aux->subcontenido->largo = 0;
+	}
+}
+
+void insertarTag(lista * generos, mp3tag * tag) {
+	char * genero = tag->genre;
+	char * artista = tag->artist;
+	nodo * actual_genero = generos->inicial;
+	while (strcmp(actual_genero->contenido, genero) != 0) {
+		actual_genero = actual_genero->sig;
+	}
+	nodo * actual_artista = actual_genero->subcontenido->inicial;
+	while (strcmp(actual_artista->contenido, artista) != 0) {
+		actual_artista = actual_artista->sig;
+	}
+	nodo * aux = (nodo *)malloc(sizeof(nodo));
+	if (actual_artista->subcontenido->largo == 0) {
+		actual_artista->subcontenido->inicial = aux;
 	}
 	else {
-		nodo * aux = (nodo *)malloc(sizeof(nodo));
-		aux->contenido = artista;
-		aux->id = tag;
-		actual_genero->subcontenido->final->sig = aux;
-		actual_genero->subcontenido->final = aux;
-		actual_genero->subcontenido->largo += 1;
+		actual_artista->subcontenido->final->sig = aux;
 	}
+	actual_artista->subcontenido->final = aux;
+	actual_artista->subcontenido->largo++;
+	aux->id = tag;
 }
 
 void inicializarLista(lista * lis) {
