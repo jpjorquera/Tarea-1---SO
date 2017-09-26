@@ -129,26 +129,35 @@ void freeTag(mp3tag * id) {
 
 void destroyAdy(lista * generos) {
 	nodo * aux;
+	nodo * aux_gen;
 	lista * art = generos->inicial->subcontenido;
 	while (generos->largo > 0) {
 		while (art->largo > 0) {
 			art->largo -= 1;
 			aux = art->inicial;
+			while (aux->subcontenido->largo > 0) {
+				aux->subcontenido->largo--;
+				nodo * tag_aux = aux->subcontenido->inicial;
+				if (aux->subcontenido->largo > 0) {
+					aux->subcontenido->inicial = tag_aux->sig;
+				}
+				freeTag(tag_aux->id);
+				free(tag_aux);
+			}
+			free(aux->subcontenido);
 			if (art->largo > 0) {
 				art->inicial = art->inicial->sig;
 			}
-			freeTag(aux->id);
 			free(aux);
 		}
-		free(generos->inicial->subcontenido);
 		generos->largo -= 1;
-		aux = generos->inicial;
+		aux_gen = generos->inicial;
 		if (generos->largo > 0) {
 			generos->inicial = generos->inicial->sig;
 			art = generos->inicial->subcontenido;
 		}
-		freeTag(aux->id);	
-		free(aux);
+		free(aux_gen->subcontenido);
+		free(aux_gen);
 	}
 	free(generos);
 }
