@@ -279,3 +279,12 @@ void get_all(FILE * archivo, mp3tag * id) {
 	id->year = year;
 	id->comment = comment;
 }
+
+int verifyTag(char * id) {
+	if (strcmp(id, "TAG") == 0) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}

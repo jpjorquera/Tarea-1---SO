@@ -34,9 +34,12 @@ int enlistSongs(lista * canciones) {
     			FILE * archivo = fopen(path, "r");
     			// Obtener tag
     			get_all(archivo, tag);
-    			// Insertar a la lista
-    			insertarGen(canciones, tag->genre);
-    			insertarArt(canciones, tag->genre, tag);
+    			// Verificard version ID3v1
+    			if (verifyTag(tag->tag)) {
+                // Insertar a la lista
+	    			insertarGen(canciones, tag->genre);
+	    			insertarArt(canciones, tag->genre, tag);
+    			}
     			// Cerrar archivo
     			fclose(archivo);
     		}
