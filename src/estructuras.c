@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "../include/estructuras.h"
 
 int buscarGenero(lista * generos, char * genero) {
@@ -6,15 +8,15 @@ int buscarGenero(lista * generos, char * genero) {
 	unsigned int largo = generos->largo;
 	unsigned int i = 0;
 	while (i < largo) {
-		if (actual->contenido == genero) {
-			return 1;
+		if (strcmp(actual->contenido, genero) == 0) {
+			return 0;
 		}
 		else {
 			actual = actual->sig;
 		}
 		++i;
 	}
-	return 0;
+	return 1;
 }
 
 int buscarArtista(lista * generos, char * genero,char * artista) {
@@ -44,29 +46,31 @@ int buscarArtista(lista * generos, char * genero,char * artista) {
 }
 
 void insertarGen(lista * generos, char * genero) {
-	nodo * aux;
-	if (generos->largo == 0){
-		aux = (nodo *)malloc(sizeof(nodo));
-		aux->contenido = genero;
-		generos->inicial = aux;
-		generos->final = aux;
-		generos->largo = 1;
+	if (buscarGenero(generos, genero)) {
+		nodo * aux;
+		if (generos->largo == 0){
+			aux = (nodo *)malloc(sizeof(nodo));
+			aux->contenido = genero;
+			generos->inicial = aux;
+			generos->final = aux;
+			generos->largo = 1;
+		}
+		else {
+			aux = (nodo *)malloc(sizeof(nodo));
+			aux->contenido = genero;
+			generos->final->sig = aux;
+			generos->final = aux;
+			generos->largo += 1;
+		}
+		aux->subcontenido = (lista *)malloc(sizeof(lista));
+		aux->subcontenido->largo = 0;
 	}
-	else {
-		aux = (nodo *)malloc(sizeof(nodo));
-		aux->contenido = genero;
-		generos->final->sig = aux;
-		generos->final = aux;
-		generos->largo += 1;
-	}
-	aux->subcontenido = (lista *)malloc(sizeof(lista));
-	aux->subcontenido->largo = 0;
 }
 
 void insertarArt(lista * generos, char * genero, mp3tag * tag) {
 	nodo * actual_genero = generos->inicial;
 	char * artista = tag->artist;
-	while (actual_genero->contenido != genero) {
+	while (strcmp(actual_genero->contenido, genero) != 0) {
 		actual_genero = actual_genero->sig;
 	}
 	if (actual_genero->subcontenido->largo == 0) {
