@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 int main() {
-	lista * canciones = (lista *)malloc(sizeof(lista));
+	lista * canciones = (lista *)calloc(1, sizeof(lista));
 	inicializarLista(canciones);
 	enlistSongs(canciones);
 
@@ -49,5 +49,5 @@ int main() {
 	}
 
 
-	destroyAdy(canciones);
+	//destroyAdy(canciones);
 }
