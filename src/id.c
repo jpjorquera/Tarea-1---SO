@@ -281,7 +281,7 @@ void get_all(FILE * archivo, mp3tag * id) {
 }
 
 int verifyTag(char * id) {
-	if (strcmp(id, "TAG") == 0) {
+	if (strncmp(id, "TAG", 3) == 0) {
 		return 1;
 	}
 	else {
