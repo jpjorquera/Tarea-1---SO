@@ -8,7 +8,7 @@ default: $(TARGET)
 
 all: default
 
-OBJECTS = test.c src/id.c src/dir.c src/estructuras.c
+OBJECTS = src/organize.c src/id.c src/dir.c src/estructuras.c
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
