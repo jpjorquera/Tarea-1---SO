@@ -36,7 +36,6 @@ int enlistSongs(lista * canciones) {
 				strncat(path, entrada->d_name, strlen(entrada->d_name));
 				// Abriendo archivo
     			FILE * archivo = fopen(path, "rb");
-                //printf("%s\n", path);
     			// Obtener tag
     			get_all(archivo, tag);
     			// Verificard version ID3v1
@@ -46,10 +45,15 @@ int enlistSongs(lista * canciones) {
 	    			insertarArt(canciones, tag->genre, tag->artist);
                     insertarTag(canciones, tag);
     			}
+                else {
+                    freeTag(tag);
+                }
+                free(path);
     			// Cerrar archivo
     			fclose(archivo);
     		}
-    	};
+    	}
+        free(extension);
     }
     closedir(carpeta);
     return 1;
@@ -125,12 +129,14 @@ void moveSongs(lista * canciones) {
                     rename(path, new_path);
                     free(new_path);
                 }
+                freeTag(tag_actual);
                 free(path);
-                free(tag_actual);
                 fclose(archivo);
             }
         }
+        free(extension);
     }
+    closedir(carpeta);
 }
 
 void enterFolder() {
