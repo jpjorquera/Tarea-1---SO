@@ -23,17 +23,19 @@ int enlistSongs(lista * canciones) {
 	if (carpeta == NULL) {
         return 0;
     }
+    int largo;
     while ((entrada = readdir(carpeta)) != NULL) {
     	char * extension = (char *)calloc(5, sizeof(char));
     	if (getExt(entrada->d_name, &extension)) {
     		if (!strncmp(extension, "mp3", 3)) {
-    			mp3tag * tag = (mp3tag *)malloc(sizeof(mp3tag));
+    			mp3tag * tag = (mp3tag *)calloc(1, sizeof(mp3tag));
     			// Armando direccion del archivo
-    			char * path = (char *)calloc((strlen(entrada->d_name)+strlen(biblioteca)+1), sizeof(char));
+                largo = strlen(entrada->d_name) + strlen(biblioteca) + 1;
+    			char * path = (char *)calloc(largo, sizeof(char));
 				strcpy(path, biblioteca);
-				strcat(path, entrada->d_name);
+				strncat(path, entrada->d_name, strlen(entrada->d_name));
 				// Abriendo archivo
-    			FILE * archivo = fopen("musica/Aerials.mp3", "rb");
+    			FILE * archivo = fopen(path, "rb");
     			// Obtener tag
     			get_all(archivo, tag);
     			// Verificard version ID3v1
