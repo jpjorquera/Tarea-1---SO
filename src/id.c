@@ -251,7 +251,7 @@ void get_genre(char * genre) {
 
 void get_all(FILE * archivo, mp3tag * id) {
 	// Buscar tag al final del archivo
-	fseek(archivo, -1*128, SEEK_END);
+	fseek(archivo, -128, SEEK_END);
 	// Definir parametros en el heap
 	char * tag_type = malloc(sizeof(char)*3);
 	char * title = malloc(sizeof(char)*30);

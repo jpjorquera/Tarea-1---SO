@@ -12,7 +12,7 @@ void get_genre(char * numero_genero);
 void get_all(FILE * archivo, mp3tag * tag);
 int verifyTag(char * id);
 // dir
-int getExt(char * archivo, char * extension);
+int getExt(char * archivo, char ** extension);
 int enlistSongs(lista * canciones);
 void createFolders(lista * canciones);
 void moveSongs(lista * canciones);

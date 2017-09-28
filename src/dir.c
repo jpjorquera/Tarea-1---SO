@@ -5,13 +5,13 @@
 #include <unistd.h>
 #include "../include/header.h"
 
-int getExt(char * archivo, char * extension) {
+int getExt(char * archivo, char ** extension) {
 	char * ext = strrchr(archivo, '.');
 	if (!ext) {
 		return 0;
 	} 
 	else {
-		strcpy(extension, (ext+1));
+		strcpy(extension[0], (ext+1));
     	return 1;
 	}
 }
@@ -19,21 +19,21 @@ int getExt(char * archivo, char * extension) {
 int enlistSongs(lista * canciones) {
 	struct dirent * entrada;
 	DIR * carpeta = opendir("Biblioteca De Musica");
-	char * biblioteca = "Biblioteca de Musica/";
+	char * biblioteca = "./Biblioteca De Musica/";
 	if (carpeta == NULL) {
         return 0;
     }
     while ((entrada = readdir(carpeta)) != NULL) {
-    	char * extension = (char *)malloc(sizeof(char));
-    	if (getExt(entrada->d_name, extension)) {
+    	char * extension = (char *)calloc(5, sizeof(char));
+    	if (getExt(entrada->d_name, &extension)) {
     		if (!strncmp(extension, "mp3", 3)) {
     			mp3tag * tag = (mp3tag *)malloc(sizeof(mp3tag));
     			// Armando direccion del archivo
-    			char * path = (char *)malloc(sizeof(char)*(strlen(entrada->d_name)+strlen(biblioteca)+1));
+    			char * path = (char *)calloc((strlen(entrada->d_name)+strlen(biblioteca)+1), sizeof(char));
 				strcpy(path, biblioteca);
 				strcat(path, entrada->d_name);
 				// Abriendo archivo
-    			FILE * archivo = fopen(path, "r");
+    			FILE * archivo = fopen("musica/Aerials.mp3", "rb");
     			// Obtener tag
     			get_all(archivo, tag);
     			// Verificard version ID3v1
@@ -97,8 +97,8 @@ void moveSongs(lista * canciones) {
     struct dirent * entrada;
     DIR * carpeta = opendir("Biblioteca De Musica");
     while ((entrada = readdir(carpeta)) != NULL) {
-        char * extension = (char *)malloc(sizeof(char));
-        if (getExt(entrada->d_name, extension)) {
+        char * extension = (char *)calloc(5, sizeof(char));
+        if (getExt(entrada->d_name, &extension)) {
             if (!strncmp(extension, "mp3", 3)) {
                 mp3tag * tag_actual = (mp3tag *)malloc(sizeof(mp3tag));
                 char * path = (char *)malloc(sizeof(char)*(strlen(entrada->d_name)+strlen(biblioteca)+1));
