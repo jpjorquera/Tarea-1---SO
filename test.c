@@ -44,8 +44,8 @@ int main() {
 		if (i < canciones->largo) {
 			auxi = auxi->sig;
 		}
-		//createFolders(canciones);
-		//moveSongs(canciones);
+		createFolders(canciones);
+		moveSongs(canciones);
 	}
 
 
