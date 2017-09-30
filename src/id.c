@@ -257,7 +257,7 @@ void get_all(FILE * archivo, mp3tag * id) {
 	char * title = calloc(30, sizeof(char));
 	char * artist = calloc(30, sizeof(char));
 	char * album = calloc(30, sizeof(char));
-	char * year = calloc(4, sizeof(char));
+	char * year = calloc(5, sizeof(char));
 	char * comment = calloc(30, sizeof(char));
 	char * genre = calloc(20, sizeof(char));
 	// Leer atributos del archivo
