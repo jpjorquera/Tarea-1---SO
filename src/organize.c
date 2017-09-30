@@ -67,6 +67,7 @@ int main() {
       printf("No habia nada en la biblioteca, saliendo\n");
       exit(0);
    }
+   printf("\n");
    printf("Biblioteca organizada!\n\n");
 
 
@@ -295,7 +296,7 @@ int main() {
    }
    // Mover a
    else if (!strncmp(clean_accn, "2", 1)) {
-      printf("Carpetas:\n");
+      printf("Opciones:\n");
       printf("%s", alternativas->str);
       printf("[%d] Cancelar\n", (alternativas->largo+1));
       while (1) {
@@ -462,7 +463,7 @@ int main() {
       else if (!strncmp(clean_accn, "2", 1)) {
          // Mover a
          if (flag_level < 2) {
-            printf("Carpetas:\n");
+            printf("Opciones:\n");
             if (flag_level == 0){
                printf("%s", alternativas->str);
                printf("[%d] Cancelar\n", (alternativas->largo+1));
