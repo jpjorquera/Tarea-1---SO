@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <time.h>
 #include "../include/header.h"
 
 typedef struct actn_flgs {
@@ -37,6 +38,7 @@ char * strip(char * palabra) {
 }
 
 int main() {
+   srand(time(NULL));
    char * err = "Accion invalida, intente denuevo";
    char org_bib[20];
    // Pedir organizar
@@ -68,7 +70,9 @@ int main() {
    printf("Biblioteca organizada!\n\n");
 
 
-
+   // Crear strings de opciones a mostrar
+   lista * alternativas = calloc(1, sizeof(lista));
+   inicializarLista(alternativas);
    i = 0;
    int j = 0, k = 0;
    unsigned int largo_generos = 0;
@@ -78,14 +82,15 @@ int main() {
    nodo * aux_art;
    nodo * aux_song;
    char * string_generos = (char *)calloc(1, sizeof(char));
-   char * iterador = (char *)calloc(2, sizeof(char));
    while (i < canciones->largo) {
       largo_generos += strlen(aux_gen->contenido)+9;
       string_generos = (char *)realloc(string_generos, largo_generos);
+      char * iterador = (char *)calloc(2, sizeof(char));
       memset(iterador, '\0', 2);
       strcat(string_generos, "[");
       sprintf(iterador, "%d", (i+1));
       strcat(string_generos, iterador);
+      insertarGen(alternativas, iterador);
       strcat(string_generos, "] ");
       strcat(string_generos, aux_gen->contenido);
       strcat(string_generos, "\n");
@@ -94,10 +99,12 @@ int main() {
       while (j < aux_gen->subcontenido->largo) {
          largo_artistas += strlen(aux_art->contenido)+9;
          string_artistas = (char *)realloc(string_artistas, largo_artistas);
-         memset(iterador, '\0', 2);
+         char * iterador2 = (char *)calloc(2, sizeof(char));
+         memset(iterador2, '\0', 2);
          strcat(string_artistas, "[");
-         sprintf(iterador, "%d", (j+1));
-         strcat(string_artistas, iterador);
+         sprintf(iterador2, "%d", (j+1));
+         insertarArt(alternativas, iterador, iterador2);
+         strcat(string_artistas, iterador2);
          strcat(string_artistas, "] ");
          strcat(string_artistas, aux_art->contenido);
          strcat(string_artistas, "\n");
@@ -106,30 +113,62 @@ int main() {
          while (k < aux_art->subcontenido->largo) {
             largo_canciones += strlen(aux_song->id->song)+9;
             string_canciones = (char *)realloc(string_canciones, largo_canciones);
-            memset(iterador, '\0', 2);
+            mp3tag * fake = (mp3tag *)calloc(1, sizeof(mp3tag));
+            fake->genre = iterador;
+            fake->artist = iterador2;
+            char * iterador3 = (char *)calloc(2, sizeof(char));
+            memset(iterador3, '\0', 2);
             strcat(string_canciones, "[");
-            sprintf(iterador, "%d", (k+1));
-            strcat(string_canciones, iterador);
+            sprintf(iterador3, "%d", (k+1));
+            insertarTag(alternativas, fake);
+            strcat(string_canciones, iterador3);
             strcat(string_canciones, "] ");
             strcat(string_canciones, aux_song->id->song);
             strcat(string_canciones, "\n");
             aux_song = aux_song->sig;
+            free(iterador3);
             k++;
          }
-         printf("%s\n", string_canciones);
+         aux_art->subcontenido->str = string_canciones;
          largo_canciones = 0;
          k = 0;
          aux_art = aux_art->sig;
          j++;
       }
+      aux_gen->subcontenido->str = string_artistas;
       largo_artistas = 0;
       j = 0;
       aux_gen = aux_gen->sig;
       i++;
    }
-   free(iterador);
+   alternativas->str = string_generos;
    i = 0;
-
+   /*j = 0, k = 0;
+   aux_gen = canciones->inicial;
+   while (i < canciones->largo) {
+      //printf("i = %d\n", i);
+      aux_art = aux_gen->subcontenido->inicial;
+      printf("%s\n", aux_gen->subcontenido->str);
+      while (j < aux_gen->subcontenido->largo) {
+         //printf("j = %d\n", j);
+         aux_song = aux_art->subcontenido->inicial;
+         printf("%s\n", aux_art->subcontenido->str);
+         while (k < aux_art->subcontenido->largo) {
+            //printf("k = %d\n", k);
+            aux_song = aux_song->sig;
+            k++;
+         }
+         k = 0;
+         aux_art = aux_art->sig;
+         j++;
+      }
+      j = 0;
+      aux_gen = aux_gen->sig;
+      i++;
+   }*/
+   //free(iterador2);
+   //free(iterador);
+   //free(iterador3);
 
 
 
@@ -190,7 +229,7 @@ int main() {
    nodo * actual = canciones->inicial;
    nodo * anterior = actual;
    unsigned int length = 0, pos_genre = 0;
-   /*// Recibir input
+   // Recibir input
    strcpy(texto_accion_actual, texto_accion_inicial);
    printf("%s", texto_accion_actual);
    char accn[15];
@@ -198,6 +237,7 @@ int main() {
    scanf("%s", accn);
    char * clean_accn = strip(accn);
    for (i=0; clean_accn[i]; i++) clean_accn[i] = tolower((unsigned char)clean_accn[i]);
+   printf("\n");
    // Verificar accion
       // Salir
    if (!strncmp(clean_accn, "4", 1)) {
@@ -207,32 +247,51 @@ int main() {
       free(texto_accion_volver);
       free(texto_accion_abrir);
       free(texto_accion_actual);
+      destroyAdy(canciones, 0);
+      //destroyAdy(alternativas, 1);
       exit(0);
    }
    // Mostrar
    else if (!strncmp(clean_accn, "1", 1)) {
       actn_status->status = 1;
-      nodo * auxiliar = actual;
-      // Ver largo del string a crear
-      while (pos_genre < canciones->largo) {
-         length += strlen(auxiliar->contenido);
-         pos_genre++;
-      }
-      // Generar string de generos a imprimir
-      char * generos = (char *)calloc(length + (pos_genre * 2) + 2, sizeof(char));
-      auxiliar = actual;
-      while (pos_genre > 0) {
-         strcat(generos, auxiliar->contenido);
-         strcat(generos, " ");
-         auxiliar = auxiliar->sig;
-         pos_genre--;
-      }
-      printf("%s\n\n", generos);
+      actn_status->mostrar = 1;
+      printf("%s\n", alternativas->str);
    }
    // Azar
    else if (!strncmp(clean_accn, "3", 1)) {
+      int random = rand() % (canciones->largo + 1);
+      nodo * aux_rand = canciones->inicial;
+      i = 0;
+      while (i < (random-1)) {
+         aux_rand = aux_rand->sig;
+         i++;
+      }
+      random = rand() % (aux_rand->subcontenido->largo + 1);
+      i = 0;
+      aux_rand = aux_rand->subcontenido->inicial;
+      while (i < (random-1)) {
+         aux_rand = aux_rand->sig;
+         i++;
+      }
+      printf("El artista al azar es ");
+      printf("%s\nSus canciones son:\n", aux_rand->contenido);
+      unsigned int random_length = 0;
+      char * random_art = (char *)calloc(1, sizeof(char));
+      int rand_max = aux_rand->subcontenido->largo;
+      aux_rand = aux_rand->subcontenido->inicial;
+      i = 0;
+      while (i < rand_max) {
+         random_length += strlen(aux_rand->id->song) + 6;
+         random_art = (char *)realloc(random_art, random_length);
+         strcat(random_art, "- ");
+         strcat(random_art, aux_rand->id->song);
+         strcat(random_art, "\n");
+         aux_rand = aux_rand->sig;
+         i++;
+      }
+      printf("%s\n", random_art);
       actn_status->status = 1;
-
+      free(random_art);
    }
    // Mover a
    else if (!strncmp(clean_accn, "2", 1)) {
@@ -240,7 +299,7 @@ int main() {
       flag_level++;
 
       
-            nodo * auxiliar = actual;
+     /*       nodo * auxiliar = actual;
             unsigned int largo = 0;
             while (largo < canciones->largo) {
                if (1) {
@@ -254,7 +313,7 @@ int main() {
                }
                auxiliar = auxiliar->sig;
                largo++;
-            }
+            }*/
       if (!actn_status->mover) {
          printf("Carpeta erronea\n");
       }
@@ -269,10 +328,49 @@ int main() {
       scanf("%19s", accn);
       clean_accn = strip(accn);
       for (i=0; clean_accn[i]; i++) clean_accn[i] = tolower((unsigned char)clean_accn[i]);
+      printf("\n");
+      // Verificar accion
+         // Salir
       if (!strcmp(clean, "no")) printf("Saliendo del programa\n"), exit(0);
+
+      // Azar
+      else if (!strncmp(clean_accn, "3", 1)) {
+         int random = rand() % (canciones->largo + 1);
+         nodo * aux_rand = canciones->inicial;
+         i = 0;
+         while (i < (random-1)) {
+            aux_rand = aux_rand->sig;
+            i++;
+         }
+         random = rand() % (aux_rand->subcontenido->largo + 1);
+         i = 0;
+         aux_rand = aux_rand->subcontenido->inicial;
+         while (i < (random-1)) {
+            aux_rand = aux_rand->sig;
+            i++;
+         }
+         printf("El artista al azar es ");
+         printf("%s\nSus canciones son:\n", aux_rand->contenido);
+         unsigned int random_length = 0;
+         char * random_art = (char *)calloc(1, sizeof(char));
+         int rand_max = aux_rand->subcontenido->largo;
+         aux_rand = aux_rand->subcontenido->inicial;
+         i = 0;
+         while (i < rand_max) {
+            random_length += strlen(aux_rand->id->song) + 6;
+            random_art = (char *)realloc(random_art, random_length);
+            strcat(random_art, "- ");
+            strcat(random_art, aux_rand->id->song);
+            strcat(random_art, "\n");
+            aux_rand = aux_rand->sig;
+            i++;
+         }
+         printf("%s\n", random_art);
+         actn_status->status = 1;
+         free(random_art);
+      }
    }
 
-   free(texto_accion_inicial);*/
 
 
 
