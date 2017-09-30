@@ -228,7 +228,6 @@ int main() {
    // Posicion relativas;
    nodo * actual = canciones->inicial;
    nodo * anterior = actual;
-   unsigned int length = 0, pos_genre = 0;
    /*************************************************/
    // Recibir input
    strcpy(texto_accion_actual, texto_accion_inicial);
@@ -296,32 +295,37 @@ int main() {
    }
    // Mover a
    else if (!strncmp(clean_accn, "2", 1)) {
+      printf("Carpetas:\n");
       printf("%s", alternativas->str);
       printf("[%d] Cancelar\n", (alternativas->largo+1));
-      scanf("%s", accn);
-      printf("\n");
-      char * clean_accn = strip(accn);
-      int dig_accn = atoi(clean_accn);
-      if (dig_accn > 0 && dig_accn < canciones->largo) {
-         actn_status->status = 1;
-         flag_level++;
-         i = 0;
-         anterior = canciones->inicial;
-         while (i < (dig_accn-1)) {
-            actual = actual->sig;
-            i++;
+      while (1) {
+         scanf("%s", accn);
+         printf("\n");
+         char * clean_accn = strip(accn);
+         int dig_accn = atoi(clean_accn);
+         if (dig_accn > 0 && dig_accn < canciones->largo+1) {
+            actn_status->status = 1;
+            flag_level++;
+            i = 0;
+            anterior = canciones->inicial;
+            while (i < (dig_accn-1)) {
+               actual = actual->sig;
+               i++;
+            }
+            printf("Moviendose a ");
+            printf("%s\n\n", actual->contenido);
+            memset(texto_accion_actual, '\0', max_text_all);
+            strcpy(texto_accion_actual, texto_accion_volver);
+            break;
          }
-         printf("Moviendose a ");
-         printf("%s\n\n", actual->contenido);
-         memset(texto_accion_actual, '\0', max_text_all);
-         strcpy(texto_accion_actual, texto_accion_volver);
-      }
-      if (dig_accn == (canciones->largo+1)) {
-         actn_status->status = 1;
-      }
-      if (!actn_status->status) {
-         printf("Carpeta erronea\n");
-         actn_status->mover = 1;
+         if (dig_accn == (canciones->largo+1)) {
+            actn_status->status = 1;
+            break;
+         }
+         if (!actn_status->status) {
+            printf("%s\n", err);
+            actn_status->mover = 1;
+         }
       }
    }
    // No entro a ningun comando
@@ -458,6 +462,7 @@ int main() {
       else if (!strncmp(clean_accn, "2", 1)) {
          // Mover a
          if (flag_level < 2) {
+            printf("Carpetas:\n");
             if (flag_level == 0){
                printf("%s", alternativas->str);
                printf("[%d] Cancelar\n", (alternativas->largo+1));
@@ -515,6 +520,45 @@ int main() {
          }
          // Abrir
          else {
+            printf("Opciones:\n");
+            printf("%s", actual->subcontenido->str);
+            unsigned int n_cancelar = actual->subcontenido->largo+1;
+            printf("[%u] Cancelar\n", n_cancelar);
+            while (1) {
+               char accn_abrir[15];
+               scanf("%s", accn_abrir);
+               memset(accn, '\0', 15);
+               printf("\n");
+               char * clean_accn_abrir = strip(accn_abrir);
+               int dig_accn_abrir = atoi(clean_accn_abrir);
+               if (dig_accn_abrir > 0 && dig_accn_abrir < n_cancelar) {
+                  actn_status->status = 1;
+                  // Avanzar a cancion
+                  i = 0;
+                  nodo * aux_abrir = actual->subcontenido->inicial;
+                  while (i < dig_accn_abrir-1) {
+                     aux_abrir = aux_abrir->sig;
+                     i++;
+                  }
+                  printf("Abriendo %s\n", aux_abrir->id->song);
+                  printf("\n");
+                  // Armar tag en pantalla
+                  printf("Titulo: %s\n", aux_abrir->id->song);
+                  printf("Artista: %s\n", aux_abrir->id->artist);
+                  printf("Album: %s\n", aux_abrir->id->album);
+                  printf("Año: %s\n", aux_abrir->id->year);
+                  printf("Genero: %s\n", aux_abrir->id->genre);
+                  printf("\n");
+                  break;
+               }
+               else if (dig_accn_abrir == n_cancelar) {
+                  actn_status->status = 1;
+                  break;
+               }
+               else { printf("%s\n", err); }
+
+            }
+
 
          }
       }
