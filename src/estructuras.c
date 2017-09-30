@@ -116,21 +116,30 @@ void inicializarLista(lista * lis) {
 	lis->largo = 0;
 }
 
-void freeTag(mp3tag * id) {
-	free(id->tag);
-	free(id->song);
-	free(id->artist);
-	free(id->genre);
-	free(id->album);
-	free(id->year);
-	free(id->comment);
-	free(id);
+void freeTag(mp3tag * id, short mode) {
+	if (mode == 1) {
+		free(id->artist);
+		free(id->genre);
+	}
+	else {
+		free(id->artist);
+		free(id->genre);
+		free(id->tag);
+		free(id->song);
+		free(id->album);
+		free(id->year);
+		free(id->comment);
+		free(id);
+	}
 }
 
-void destroyAdy(lista * generos) {
+void destroyAdy(lista * generos, short mode) {
 	nodo * aux;
 	nodo * aux_gen;
 	lista * art = generos->inicial->subcontenido;
+	if (mode == 1){
+		free(generos->str);
+	}
 	while (generos->largo > 0) {
 		while (art->largo > 0) {
 			art->largo -= 1;
@@ -141,8 +150,11 @@ void destroyAdy(lista * generos) {
 				if (aux->subcontenido->largo > 0) {
 					aux->subcontenido->inicial = tag_aux->sig;
 				}
-				freeTag(tag_aux->id);
+				freeTag(tag_aux->id, mode);
 				free(tag_aux);
+			}
+			if (mode == 1){
+				free(aux->subcontenido->str);
 			}
 			free(aux->subcontenido);
 			if (art->largo > 0) {
@@ -155,6 +167,9 @@ void destroyAdy(lista * generos) {
 		if (generos->largo > 0) {
 			generos->inicial = generos->inicial->sig;
 			art = generos->inicial->subcontenido;
+		}
+		if (mode == 1){
+			free(aux_gen->subcontenido->str);
 		}
 		free(aux_gen->subcontenido);
 		free(aux_gen);

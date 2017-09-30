@@ -45,7 +45,7 @@ int enlistSongs(lista * canciones) {
                     insertarTag(canciones, tag);
     			}
                 else {
-                    freeTag(tag);
+                    freeTag(tag, 0);
                 }
                 free(path);
     			// Cerrar archivo
@@ -128,7 +128,7 @@ void moveSongs(lista * canciones) {
                     rename(path, new_path);
                     free(new_path);
                 }
-                freeTag(tag_actual);
+                freeTag(tag_actual, 0);
                 free(path);
                 fclose(archivo);
             }
