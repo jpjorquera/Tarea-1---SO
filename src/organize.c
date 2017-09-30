@@ -229,6 +229,7 @@ int main() {
    nodo * actual = canciones->inicial;
    nodo * anterior = actual;
    unsigned int length = 0, pos_genre = 0;
+   /*************************************************/
    // Recibir input
    strcpy(texto_accion_actual, texto_accion_inicial);
    printf("%s", texto_accion_actual);
@@ -236,7 +237,6 @@ int main() {
    memset(accn, '\0', 15);
    scanf("%s", accn);
    char * clean_accn = strip(accn);
-   for (i=0; clean_accn[i]; i++) clean_accn[i] = tolower((unsigned char)clean_accn[i]);
    printf("\n");
    // Verificar accion
       // Salir
@@ -255,6 +255,7 @@ int main() {
    else if (!strncmp(clean_accn, "1", 1)) {
       actn_status->status = 1;
       actn_status->mostrar = 1;
+      printf("Contenido:\n");
       printf("%s\n", alternativas->str);
    }
    // Azar
@@ -295,79 +296,236 @@ int main() {
    }
    // Mover a
    else if (!strncmp(clean_accn, "2", 1)) {
-      actn_status->status = 1;
-      flag_level++;
-
-      
-     /*       nodo * auxiliar = actual;
-            unsigned int largo = 0;
-            while (largo < canciones->largo) {
-               if (1) {
-                  anterior = auxiliar;
-                  actual = auxiliar->subcontenido->inicial;
-                  memset(texto_accion_actual, '\0', max_text_all);
-                  strcpy(texto_accion_actual, texto_accion_volver);
-                  actn_status->mover = 1;
-                  printf("Moviendose\n");
-                  break;
-               }
-               auxiliar = auxiliar->sig;
-               largo++;
-            }*/
-      if (!actn_status->mover) {
-         printf("Carpeta erronea\n");
+      printf("%s", alternativas->str);
+      printf("[%d] Cancelar\n", (alternativas->largo+1));
+      scanf("%s", accn);
+      printf("\n");
+      char * clean_accn = strip(accn);
+      int dig_accn = atoi(clean_accn);
+      if (dig_accn > 0 && dig_accn < canciones->largo) {
+         actn_status->status = 1;
+         flag_level++;
+         i = 0;
+         anterior = canciones->inicial;
+         while (i < (dig_accn-1)) {
+            actual = actual->sig;
+            i++;
+         }
+         printf("Moviendose a ");
+         printf("%s\n\n", actual->contenido);
+         memset(texto_accion_actual, '\0', max_text_all);
+         strcpy(texto_accion_actual, texto_accion_volver);
       }
-      actn_status->mover = 0;
+      if (dig_accn == (canciones->largo+1)) {
+         actn_status->status = 1;
+      }
+      if (!actn_status->status) {
+         printf("Carpeta erronea\n");
+         actn_status->mover = 1;
+      }
    }
+   // No entro a ningun comando
+   else {
+      actn_status->status = 0;
+   }
+
 
    // Siguiente accion/ accion erronea
    while (1) {
-      memset(accn, '\0', 3);
       if (!actn_status->status) printf("%s\n", err);
       else {printf("%s", texto_accion_actual);}
+      memset(accn, '\0', 14);
       scanf("%19s", accn);
       clean_accn = strip(accn);
-      for (i=0; clean_accn[i]; i++) clean_accn[i] = tolower((unsigned char)clean_accn[i]);
       printf("\n");
       // Verificar accion
+         // Salir ** por completar // Azar
+      if (!strncmp(clean_accn, "4", 1)) {
          // Salir
-      if (!strcmp(clean, "no")) printf("Saliendo del programa\n"), exit(0);
-
-      // Azar
-      else if (!strncmp(clean_accn, "3", 1)) {
-         int random = rand() % (canciones->largo + 1);
-         nodo * aux_rand = canciones->inicial;
-         i = 0;
-         while (i < (random-1)) {
-            aux_rand = aux_rand->sig;
-            i++;
+         if (!flag_level) {
+            printf("Saliendo del programa\n"), exit(0);
          }
-         random = rand() % (aux_rand->subcontenido->largo + 1);
-         i = 0;
-         aux_rand = aux_rand->subcontenido->inicial;
-         while (i < (random-1)) {
-            aux_rand = aux_rand->sig;
-            i++;
+         // Azar
+         else {
+            int random = rand() % (canciones->largo + 1);
+            nodo * aux_rand = canciones->inicial;
+            i = 0;
+            while (i < (random-1)) {
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            random = rand() % (aux_rand->subcontenido->largo + 1);
+            i = 0;
+            aux_rand = aux_rand->subcontenido->inicial;
+            while (i < (random-1)) {
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            printf("El artista al azar es ");
+            printf("%s\nSus canciones son:\n", aux_rand->contenido);
+            unsigned int random_length = 0;
+            char * random_art = (char *)calloc(1, sizeof(char));
+            int rand_max = aux_rand->subcontenido->largo;
+            aux_rand = aux_rand->subcontenido->inicial;
+            i = 0;
+            while (i < rand_max) {
+               random_length += strlen(aux_rand->id->song) + 6;
+               random_art = (char *)realloc(random_art, random_length);
+               strcat(random_art, "- ");
+               strcat(random_art, aux_rand->id->song);
+               strcat(random_art, "\n");
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            printf("%s\n", random_art);
+            actn_status->status = 1;
+            free(random_art);
          }
-         printf("El artista al azar es ");
-         printf("%s\nSus canciones son:\n", aux_rand->contenido);
-         unsigned int random_length = 0;
-         char * random_art = (char *)calloc(1, sizeof(char));
-         int rand_max = aux_rand->subcontenido->largo;
-         aux_rand = aux_rand->subcontenido->inicial;
-         i = 0;
-         while (i < rand_max) {
-            random_length += strlen(aux_rand->id->song) + 6;
-            random_art = (char *)realloc(random_art, random_length);
-            strcat(random_art, "- ");
-            strcat(random_art, aux_rand->id->song);
-            strcat(random_art, "\n");
-            aux_rand = aux_rand->sig;
-            i++;
-         }
-         printf("%s\n", random_art);
+      }
+      // Mostrar
+      else if (!strncmp(clean_accn, "1", 1)) {
          actn_status->status = 1;
-         free(random_art);
+         actn_status->mostrar = 1;
+         printf("Contenido:\n");
+         if (flag_level == 0) {
+            printf("%s\n", alternativas->str);
+         }
+         else {
+            printf("%s\n", actual->subcontenido->str);
+         }
+      }
+      // Azar // Volver
+      else if (!strncmp(clean_accn, "3", 1)) {
+         // Primer nivel -> Azar
+         if (!flag_level) {
+            int random = rand() % (canciones->largo + 1);
+            nodo * aux_rand = canciones->inicial;
+            i = 0;
+            while (i < (random-1)) {
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            random = rand() % (aux_rand->subcontenido->largo + 1);
+            i = 0;
+            aux_rand = aux_rand->subcontenido->inicial;
+            while (i < (random-1)) {
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            printf("El artista al azar es ");
+            printf("%s\nSus canciones son:\n", aux_rand->contenido);
+            unsigned int random_length = 0;
+            char * random_art = (char *)calloc(1, sizeof(char));
+            int rand_max = aux_rand->subcontenido->largo;
+            aux_rand = aux_rand->subcontenido->inicial;
+            i = 0;
+            while (i < rand_max) {
+               random_length += strlen(aux_rand->id->song) + 6;
+               random_art = (char *)realloc(random_art, random_length);
+               strcat(random_art, "- ");
+               strcat(random_art, aux_rand->id->song);
+               strcat(random_art, "\n");
+               aux_rand = aux_rand->sig;
+               i++;
+            }
+            printf("%s\n", random_art);
+            actn_status->status = 1;
+            free(random_art);
+         }
+         // 2o o 3er nivel -> Volver
+         else {
+            actn_status->status = 1;
+            if (flag_level == 1) {
+               printf("Volviendo a biblioteca\n");
+               anterior = canciones->inicial;
+               actual = canciones->inicial;
+               memset(texto_accion_actual, '\0', max_text_all);
+               strcpy(texto_accion_actual, texto_accion_inicial);
+            }
+            else if (flag_level == 2) {
+               printf("Volviendo a %s\n", anterior->contenido);
+               actual = anterior;
+               anterior = canciones->inicial;
+               memset(texto_accion_actual, '\0', max_text_all);
+               strcpy(texto_accion_actual, texto_accion_volver);
+            }
+            printf("\n");
+            flag_level--;
+         }
+      }
+   
+      // Mover a // Abrir
+      else if (!strncmp(clean_accn, "2", 1)) {
+         // Mover a
+         if (flag_level < 2) {
+            if (flag_level == 0){
+               printf("%s", alternativas->str);
+               printf("[%d] Cancelar\n", (alternativas->largo+1));
+            }
+            else if (flag_level == 1) {
+               printf("%s", actual->subcontenido->str);
+               printf("[%d] Cancelar\n", (actual->subcontenido->largo+1));
+            }
+            while (1) {
+               char accn_mostrar[15];
+               scanf("%s", accn_mostrar);
+               memset(accn, '\0', 15);
+               printf("\n");
+               char * clean_accn_mostrar = strip(accn_mostrar);
+               int dig_accn = atoi(clean_accn_mostrar);
+               unsigned int largo_actual;
+               if (flag_level) {
+                  largo_actual = actual->subcontenido->largo+1;
+               }
+               else if (flag_level == 0) {
+                  largo_actual = canciones->largo+1;
+               }
+               if (dig_accn > 0 && dig_accn < largo_actual) {
+                  actn_status->status = 1;
+                  i = 0;
+                  anterior = actual;
+                  if (flag_level) {
+                     actual = actual->subcontenido->inicial;
+                  }
+                  while (i < (dig_accn-1)) {
+                     actual = actual->sig;
+                     i++;
+                  }
+                  printf("Moviendose a ");
+                  printf("%s\n\n", actual->contenido);
+                  memset(texto_accion_actual, '\0', max_text_all);
+                  if (!flag_level) {
+                     strcpy(texto_accion_actual, texto_accion_volver);
+                  }
+                  else {
+                     strcpy(texto_accion_actual, texto_accion_abrir);
+                  }
+                  flag_level++;
+                  break;
+               }
+               else if (dig_accn == largo_actual) {
+                  actn_status->status = 1;
+                  break;
+               }
+               else {
+                  printf("%s\n", err);
+                  actn_status->mover = 1;
+               }
+            }
+         }
+         // Abrir
+         else {
+
+         }
+      }
+      // Salir en nivel 3
+      else if (!strncmp(clean_accn, "5", 1) && flag_level>0) {
+         printf("Saliendo del programa\n"), exit(0);
+      }
+
+      // No entro a ningun comando
+      else {
+         actn_status->status = 0;
       }
    }
 
