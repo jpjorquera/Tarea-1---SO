@@ -253,13 +253,13 @@ void get_all(FILE * archivo, mp3tag * id) {
 	// Buscar tag al final del archivo
 	fseek(archivo, -128, SEEK_END);
 	// Definir parametros en el heap
-	char * tag_type = malloc(sizeof(char)*3);
-	char * title = malloc(sizeof(char)*30);
-	char * artist = malloc(sizeof(char)*30);
-	char * album = malloc(sizeof(char)*30);
-	char * year = malloc(sizeof(char)*4);
-	char * comment = malloc(sizeof(char)*30);
-	char * genre = malloc(sizeof(char)*20);
+	char * tag_type = calloc(3, sizeof(char));
+	char * title = calloc(30, sizeof(char));
+	char * artist = calloc(30, sizeof(char));
+	char * album = calloc(30, sizeof(char));
+	char * year = calloc(4, sizeof(char));
+	char * comment = calloc(30, sizeof(char));
+	char * genre = calloc(20, sizeof(char));
 	// Leer atributos del archivo
 	fread(tag_type, sizeof(char), 3, archivo);
 	fread(title, sizeof(char), 30, archivo);
