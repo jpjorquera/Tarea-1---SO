@@ -16,6 +16,7 @@ typedef struct lista_enlazada {
 	struct node * inicial;
 	struct node * final;
 	unsigned int largo;
+	char * str;
 } lista;
 
 typedef struct tag {
@@ -34,7 +35,7 @@ void insertarGen(lista * generos, char * genero);
 void insertarArt(lista * generos, char * genero, char * artista);
 void insertarTag(lista * generos, mp3tag * tag);
 void inicializarLista(lista * generos);
-void freeTag(mp3tag * tag);
-void destroyAdy(lista * generos);
+void freeTag(mp3tag * tag, short mode);
+void destroyAdy(lista * generos, short mode);
 
 #endif
