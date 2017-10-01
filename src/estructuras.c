@@ -8,7 +8,7 @@ int buscarGenero(lista * generos, char * genero) {
 	unsigned int largo = generos->largo;
 	unsigned int i = 0;
 	while (i < largo) {
-		if (strcmp(actual->contenido, genero) == 0) {
+		if (strncmp(actual->contenido, genero, strlen(genero)) == 0) {
 			return 1;
 		}
 		else {
@@ -19,16 +19,16 @@ int buscarGenero(lista * generos, char * genero) {
 	return 0;
 }
 
-int buscarArtista(lista * generos, char * genero,char * artista) {
+int buscarArtista(lista * generos, char * genero, char * artista) {
 	nodo * actual_genero = generos->inicial;
 	unsigned int largo_genero = generos->largo;
 	unsigned int i = 0, j = 0;
 	while (i < largo_genero) {
-		if (strcmp(actual_genero->contenido, genero) == 0) {
+		if (strncmp(actual_genero->contenido, genero, strlen(genero)) == 0) {
 			nodo * actual_artista = actual_genero->subcontenido->inicial;
 			unsigned int largo_artista = actual_genero->subcontenido->largo;
 			while (j < largo_artista) {
-				if (strcmp(actual_artista->contenido, artista) == 0){
+				if (strncmp(actual_artista->contenido, artista, strlen(genero)) == 0){
 					return 1;
 				}
 				else {
@@ -62,7 +62,7 @@ void insertarGen(lista * generos, char * genero) {
 			generos->final = aux;
 			generos->largo += 1;
 		}
-		aux->subcontenido = (lista *)malloc(sizeof(lista));
+		aux->subcontenido = (lista *)calloc(1, sizeof(lista));
 		aux->subcontenido->largo = 0;
 	}
 }
@@ -84,7 +84,7 @@ void insertarArt(lista * generos, char * genero, char * artista) {
 		}
 		actual_genero->subcontenido->final = aux;
 		actual_genero->subcontenido->largo++;
-		aux->subcontenido = (lista *)malloc(sizeof(lista));
+		aux->subcontenido = (lista *)calloc(1, sizeof(lista));
 		aux->subcontenido->largo = 0;
 	}
 }
@@ -156,12 +156,14 @@ void destroyAdy(lista * generos, short mode) {
 			if (mode == 1){
 				free(aux->subcontenido->str);
 			}
+			free(aux->subcontenido->str);
 			free(aux->subcontenido);
 			if (art->largo > 0) {
 				art->inicial = art->inicial->sig;
 			}
 			free(aux);
 		}
+		free(art->str);
 		generos->largo -= 1;
 		aux_gen = generos->inicial;
 		if (generos->largo > 0) {
@@ -174,5 +176,33 @@ void destroyAdy(lista * generos, short mode) {
 		free(aux_gen->subcontenido);
 		free(aux_gen);
 	}
+	free(generos);
+}
+
+void destroyAdyStr(lista * generos, short mode) {
+	nodo * aux;
+	nodo * aux_art;
+	nodo * aux_gen = generos->inicial;
+	lista * art;
+	while (generos->largo > 0) {
+		art = aux_gen->subcontenido;
+		aux_art = art->inicial;
+		while (art->largo > 0) {
+			aux = aux_art;
+			aux_art = aux_art->sig;
+			(art->largo)--;
+			free(aux->contenido);
+			free(aux->subcontenido);
+			free(aux);
+		}
+		free(art->str);
+		free(art);
+		aux = aux_gen;
+		free(aux->contenido);
+		aux_gen = aux_gen->sig;
+		(generos->largo)--;
+		free(aux);
+	}
+	free(generos->str);
 	free(generos);
 }

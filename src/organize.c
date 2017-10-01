@@ -86,8 +86,8 @@ int main() {
    while (i < canciones->largo) {
       largo_generos += strlen(aux_gen->contenido)+9;
       string_generos = (char *)realloc(string_generos, largo_generos);
-      char * iterador = (char *)calloc(2, sizeof(char));
-      memset(iterador, '\0', 2);
+      char * iterador = (char *)calloc(4, sizeof(char));
+      memset(iterador, '\0', 4);
       strcat(string_generos, "[");
       sprintf(iterador, "%d", (i+1));
       strcat(string_generos, iterador);
@@ -100,8 +100,8 @@ int main() {
       while (j < aux_gen->subcontenido->largo) {
          largo_artistas += strlen(aux_art->contenido)+9;
          string_artistas = (char *)realloc(string_artistas, largo_artistas);
-         char * iterador2 = (char *)calloc(2, sizeof(char));
-         memset(iterador2, '\0', 2);
+         char * iterador2 = (char *)calloc(4, sizeof(char));
+         memset(iterador2, '\0', 4);
          strcat(string_artistas, "[");
          sprintf(iterador2, "%d", (j+1));
          insertarArt(alternativas, iterador, iterador2);
@@ -114,14 +114,10 @@ int main() {
          while (k < aux_art->subcontenido->largo) {
             largo_canciones += strlen(aux_song->id->song)+9;
             string_canciones = (char *)realloc(string_canciones, largo_canciones);
-            mp3tag * fake = (mp3tag *)calloc(1, sizeof(mp3tag));
-            fake->genre = iterador;
-            fake->artist = iterador2;
-            char * iterador3 = (char *)calloc(2, sizeof(char));
-            memset(iterador3, '\0', 2);
+            char * iterador3 = (char *)calloc(4, sizeof(char));
+            memset(iterador3, '\0', 4);
             strcat(string_canciones, "[");
             sprintf(iterador3, "%d", (k+1));
-            insertarTag(alternativas, fake);
             strcat(string_canciones, iterador3);
             strcat(string_canciones, "] ");
             strcat(string_canciones, aux_song->id->song);
@@ -144,32 +140,6 @@ int main() {
    }
    alternativas->str = string_generos;
    i = 0;
-   /*j = 0, k = 0;
-   aux_gen = canciones->inicial;
-   while (i < canciones->largo) {
-      //printf("i = %d\n", i);
-      aux_art = aux_gen->subcontenido->inicial;
-      printf("%s\n", aux_gen->subcontenido->str);
-      while (j < aux_gen->subcontenido->largo) {
-         //printf("j = %d\n", j);
-         aux_song = aux_art->subcontenido->inicial;
-         printf("%s\n", aux_art->subcontenido->str);
-         while (k < aux_art->subcontenido->largo) {
-            //printf("k = %d\n", k);
-            aux_song = aux_song->sig;
-            k++;
-         }
-         k = 0;
-         aux_art = aux_art->sig;
-         j++;
-      }
-      j = 0;
-      aux_gen = aux_gen->sig;
-      i++;
-   }*/
-   //free(iterador2);
-   //free(iterador);
-   //free(iterador3);
 
 
 
@@ -247,8 +217,11 @@ int main() {
       free(texto_accion_volver);
       free(texto_accion_abrir);
       free(texto_accion_actual);
+      free(actn_status);
+      printf("canciones->largo %u\n", canciones->largo);
       destroyAdy(canciones, 0);
-      //destroyAdy(alternativas, 1);
+      printf("alternativas->largo %u\n", alternativas->largo);
+      destroyAdyStr(alternativas, 1);
       exit(0);
    }
    // Mostrar
@@ -348,7 +321,21 @@ int main() {
       if (!strncmp(clean_accn, "4", 1)) {
          // Salir
          if (!flag_level) {
-            printf("Saliendo del programa\n"), exit(0);
+            printf("Saliendo del programa\n");
+            // Liberar memoria
+            free(texto_accion_inicial);
+            free(texto_accion_volver);
+            free(texto_accion_abrir);
+            free(texto_accion_actual);
+            free(actn_status);
+            destroyAdy(canciones, 0);
+            destroyAdyStr(alternativas, 1);
+
+
+
+
+
+            exit(0);
          }
          // Azar
          else {
@@ -565,7 +552,21 @@ int main() {
       }
       // Salir en nivel 3
       else if (!strncmp(clean_accn, "5", 1) && flag_level>0) {
-         printf("Saliendo del programa\n"), exit(0);
+         printf("Saliendo del programa\n");
+         // Liberar memoria
+         free(texto_accion_inicial);
+         free(texto_accion_volver);
+         free(texto_accion_abrir);
+         free(texto_accion_actual);
+         free(actn_status);
+         destroyAdy(canciones, 0);
+         destroyAdyStr(alternativas, 1);
+
+
+
+
+         
+         exit(0);
       }
 
       // No entro a ningun comando

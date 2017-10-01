@@ -37,5 +37,6 @@ void insertarTag(lista * generos, mp3tag * tag);
 void inicializarLista(lista * generos);
 void freeTag(mp3tag * tag, short mode);
 void destroyAdy(lista * generos, short mode);
+void destroyAdyStr(lista * generos, short mode);
 
 #endif
