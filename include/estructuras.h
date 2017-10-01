@@ -29,14 +29,23 @@ typedef struct tag {
 	char * comment;
 } mp3tag;
 
+// Revisa si el genero ya esta en la lista
 int buscarGenero(lista * generos, char * genero);
+// Revisa si el artista ya esta en la lista
 int buscarArtista(lista * generos, char * genero, char * artista);
+// Intenta insertar el genero
 void insertarGen(lista * generos, char * genero);
+// Intenta insertar el artista
 void insertarArt(lista * generos, char * genero, char * artista);
+// Intenta insertar el tag id3v1
 void insertarTag(lista * generos, mp3tag * tag);
+// Inicializa la lista con largo 0
 void inicializarLista(lista * generos);
+// Libera la memoria del tag
 void freeTag(mp3tag * tag, short mode);
+// Destruye lista de adyacencia
 void destroyAdy(lista * generos, short mode);
+// Destruye lista de adyacencia especializada en strings
 void destroyAdyStr(lista * generos, short mode);
 
 #endif

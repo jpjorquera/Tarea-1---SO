@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/estructuras.h"
 
+// Revisa si el genero ya esta en la lista
 int buscarGenero(lista * generos, char * genero) {
 	nodo * actual = generos->inicial;
 	unsigned int largo = generos->largo;
@@ -19,6 +20,7 @@ int buscarGenero(lista * generos, char * genero) {
 	return 0;
 }
 
+// Revisa si el artista ya esta en la lista
 int buscarArtista(lista * generos, char * genero, char * artista) {
 	nodo * actual_genero = generos->inicial;
 	unsigned int largo_genero = generos->largo;
@@ -45,7 +47,9 @@ int buscarArtista(lista * generos, char * genero, char * artista) {
 	return 0;
 }
 
+// Intenta insertar el genero
 void insertarGen(lista * generos, char * genero) {
+	// Si es que no está
 	if (!buscarGenero(generos, genero)) {
 		nodo * aux;
 		if (generos->largo == 0){
@@ -67,11 +71,14 @@ void insertarGen(lista * generos, char * genero) {
 	}
 }
 
+// Intenta insertar el artista
 void insertarArt(lista * generos, char * genero, char * artista) {
 	nodo * actual_genero = generos->inicial;
+	// Avanzar al genero correspondiente
 	while (strcmp(actual_genero->contenido, genero) != 0) {
 		actual_genero = actual_genero->sig;
 	}
+	// Si es que no está el artista
 	int found = buscarArtista(generos, genero, artista);
 	if (!found) {
 		nodo * aux = (nodo *)malloc(sizeof(nodo));
@@ -89,18 +96,22 @@ void insertarArt(lista * generos, char * genero, char * artista) {
 	}
 }
 
+// Intenta insertar el tag id3v1
 void insertarTag(lista * generos, mp3tag * tag) {
 	char * genero = tag->genre;
 	char * artista = tag->artist;
 	nodo * actual_genero = generos->inicial;
+	// Avanzar genero
 	while (strcmp(actual_genero->contenido, genero) != 0) {
 		actual_genero = actual_genero->sig;
 	}
 	nodo * actual_artista = actual_genero->subcontenido->inicial;
+	// Avanzar artista
 	while (strcmp(actual_artista->contenido, artista) != 0) {
 		actual_artista = actual_artista->sig;
 	}
 	nodo * aux = (nodo *)malloc(sizeof(nodo));
+	// Si habia o no alguno insertado
 	if (actual_artista->subcontenido->largo == 0) {
 		actual_artista->subcontenido->inicial = aux;
 	}
@@ -112,10 +123,13 @@ void insertarTag(lista * generos, mp3tag * tag) {
 	aux->id = tag;
 }
 
+// Inicializa la lista con largo 0
 void inicializarLista(lista * lis) {
 	lis->largo = 0;
 }
 
+// Libera la memoria del tag, dependiendo del modo
+// si es AdyStr o Ady
 void freeTag(mp3tag * id, short mode) {
 	if (mode == 1) {
 		free(id->artist);
@@ -133,6 +147,7 @@ void freeTag(mp3tag * id, short mode) {
 	}
 }
 
+// Destruye lista de adyacencia
 void destroyAdy(lista * generos, short mode) {
 	nodo * aux;
 	nodo * aux_gen;
@@ -140,10 +155,13 @@ void destroyAdy(lista * generos, short mode) {
 	if (mode == 1){
 		free(generos->str);
 	}
+	// Avanzar generos
 	while (generos->largo > 0) {
+		// Avanzar artistas
 		while (art->largo > 0) {
 			art->largo -= 1;
 			aux = art->inicial;
+			// Avanzar tags
 			while (aux->subcontenido->largo > 0) {
 				aux->subcontenido->largo--;
 				nodo * tag_aux = aux->subcontenido->inicial;
@@ -179,22 +197,27 @@ void destroyAdy(lista * generos, short mode) {
 	free(generos);
 }
 
+// Destruye lista de adyacencia especializada en strings
 void destroyAdyStr(lista * generos, short mode) {
 	nodo * aux;
 	nodo * aux_art;
 	nodo * aux_gen = generos->inicial;
 	lista * art;
+	// Avanzar generos
 	while (generos->largo > 0) {
 		art = aux_gen->subcontenido;
 		aux_art = art->inicial;
+		// Avanzar artistas
 		while (art->largo > 0) {
 			aux = aux_art;
 			aux_art = aux_art->sig;
 			(art->largo)--;
+			// Borrar tags
 			free(aux->contenido);
 			free(aux->subcontenido);
 			free(aux);
 		}
+		// Borrar artistas
 		free(art->str);
 		free(art);
 		aux = aux_gen;
@@ -203,6 +226,7 @@ void destroyAdyStr(lista * generos, short mode) {
 		(generos->largo)--;
 		free(aux);
 	}
+	// Borrar generos
 	free(generos->str);
 	free(generos);
 }

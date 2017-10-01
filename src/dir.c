@@ -4,26 +4,33 @@
 #include <unistd.h>
 #include "../include/header.h"
 
+// Obtiene la extension del archivo
 int getExt(char * archivo, char ** extension) {
+    // Buscar punto
 	char * ext = strrchr(archivo, '.');
 	if (!ext) {
 		return 0;
-	} 
+	}
+    // Copiar el resto
 	else {
 		strcpy(extension[0], (ext+1));
     	return 1;
 	}
 }
 
+// Lee el directorio para armar la lista con las canciones
 int enlistSongs(lista * canciones) {
 	struct dirent * entrada;
 	DIR * carpeta = opendir("biblioteca");
 	char * biblioteca = "./biblioteca/";
+    // Intentar leer carpeta
 	if (carpeta == NULL) {
         return 0;
     }
     int largo;
+    // Mientras haya contenido
     while ((entrada = readdir(carpeta)) != NULL) {
+        // Verificar extension
     	char * extension = (char *)calloc(5, sizeof(char));
     	if (getExt(entrada->d_name, &extension)) {
     		if (!strncmp(extension, "mp3", 3)) {
@@ -58,6 +65,7 @@ int enlistSongs(lista * canciones) {
     return 1;
 }
 
+// Crea las carpetas necesarias
 void createFolders(lista * canciones) {
     char * biblioteca = "./biblioteca/";
     struct stat st = {0};
@@ -65,6 +73,7 @@ void createFolders(lista * canciones) {
     nodo * auxi = canciones->inicial;
     nodo * auxj;
     i = 0;
+    // Recorrer generos
     while (i < canciones->largo) {
         int largo_str_gen = strlen(biblioteca) + strlen(auxi->contenido) + 1;
         char * path_gen = (char *)calloc(largo_str_gen, sizeof(char));
@@ -75,6 +84,7 @@ void createFolders(lista * canciones) {
             }
         auxj = auxi->subcontenido->inicial;
         j = 0;
+        // Recorrer artistas
         while (j < auxi->subcontenido->largo) {
             int largo_str_art = largo_str_gen + strlen(auxj->contenido) + 2;
             char * path_art = (char *)calloc(largo_str_art, sizeof(char));
@@ -98,13 +108,16 @@ void createFolders(lista * canciones) {
     }
 }
 
+// Mueve las canciones a las carpetas correspondientes
 void moveSongs(lista * canciones) {
     char * biblioteca = "./biblioteca/";
     struct dirent * entrada;
     DIR * carpeta = opendir("biblioteca");
     int largo;
+    // Leer contenido de carpeta
     while ((entrada = readdir(carpeta)) != NULL) {
         char * extension = (char *)calloc(5, sizeof(char));
+        // Verificar extension
         if (getExt(entrada->d_name, &extension)) {
             if (!strncmp(extension, "mp3", 3)) {
                 mp3tag * tag_actual = (mp3tag *)calloc(1, sizeof(mp3tag));
@@ -115,6 +128,7 @@ void moveSongs(lista * canciones) {
                 FILE * archivo = fopen(path, "rb");
                 // Obtener tag
                 get_all(archivo, tag_actual);
+                // Verificar id3v1
                 if (verifyTag(tag_actual->tag)) {
                     int largo_dir = strlen(biblioteca) + strlen(tag_actual->genre) 
                                     + strlen(tag_actual->artist) + strlen(entrada->d_name) + 5;
@@ -125,6 +139,7 @@ void moveSongs(lista * canciones) {
                     strncat(new_path, tag_actual->artist, strlen(tag_actual->artist));
                     strncat(new_path, "/", 1);
                     strncat(new_path, entrada->d_name, strlen(entrada->d_name));
+                    // Mover archivos
                     rename(path, new_path);
                     free(new_path);
                 }
@@ -136,12 +151,4 @@ void moveSongs(lista * canciones) {
         free(extension);
     }
     closedir(carpeta);
-}
-
-void enterFolder() {
-
-}
-
-void readSong() {
-
 }

@@ -1,5 +1,7 @@
 #include "../include/header.h"
 
+// Obtiene el genero en base al número correspondiente
+// y lo almacena en genre
 void get_genre(char * genre) {
 	unsigned short genero = (unsigned short)genre[0];
 	switch (genero) {
@@ -249,6 +251,7 @@ void get_genre(char * genre) {
 	}
 }
 
+// Obtiene el tag entero id3v1
 void get_all(FILE * archivo, mp3tag * id) {
 	// Buscar tag al final del archivo
 	fseek(archivo, -128, SEEK_END);
@@ -280,6 +283,7 @@ void get_all(FILE * archivo, mp3tag * id) {
 	id->comment = comment;
 }
 
+// Verifica que sea id3v1
 int verifyTag(char * id) {
 	if (strncmp(id, "TAG", 3) == 0) {
 		return 1;
